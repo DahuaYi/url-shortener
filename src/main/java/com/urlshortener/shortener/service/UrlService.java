@@ -18,6 +18,9 @@ public class UrlService {
     private final Random random = new Random();
 
     public UrlMapping shortenUrl(String originalUrl) {
+        if (!isValidUrl(originalUrl)) {
+            throw new IllegalArgumentException("Invalid URL");
+        }
         String shortCode = generateShortCode();
         UrlMapping urlMapping = new UrlMapping(originalUrl, shortCode);
         return urlMappingRepository.save(urlMapping);
@@ -29,6 +32,15 @@ public class UrlService {
             sb.append(CHARACTERS.charAt(random.nextInt(CHARACTERS.length())));
         }
         return sb.toString();
+    }
+
+    private boolean isValidUrl(String url) {
+        try {
+            new java.net.URL(url);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public String getAndTrackOriginalUrl(String shortCode) {

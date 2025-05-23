@@ -17,8 +17,12 @@ public class UrlController {
     @PostMapping("/shorten")
     public ResponseEntity<Map<String, String>> shortenUrl(@RequestBody Map<String, String> request) {
         String originalUrl = request.get("url");
-        UrlMapping urlMapping = urlService.shortenUrl(originalUrl);
-        return ResponseEntity.ok(Map.of("shortCode", urlMapping.getShortCode()));
+        try {
+            UrlMapping urlMapping = urlService.shortenUrl(originalUrl);
+            return ResponseEntity.ok(Map.of("shortCode", urlMapping.getShortCode()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 
     @GetMapping("/analytics/{shortCode}")
