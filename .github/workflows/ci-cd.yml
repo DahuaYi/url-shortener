@@ -24,6 +24,10 @@ jobs:
         run: mvn checkstyle:check || true
 
       - name: Run unit tests
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/shortener_db
+          SPRING_DATASOURCE_USERNAME: root
+          SPRING_DATASOURCE_PASSWORD: 7651319Yi
         run: mvn test
 
       - name: Build JAR
@@ -44,3 +48,17 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/shortener-backend:latest
+
+services:
+  mysql:
+    image: mysql:8.0
+    env:
+      MYSQL_ROOT_PASSWORD: 7651319Yi
+      MYSQL_DATABASE: shortener_db
+    ports:
+      - 3306:3306
+    options: >-
+      --health-cmd="mysqladmin ping --silent"
+      --health-interval=10s
+      --health-timeout=5s
+      --health-retries=5
